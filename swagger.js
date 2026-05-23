@@ -4,9 +4,9 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Student API",
+      title: "Student & Course API",
       version: "1.0.0",
-      description: "Simple Student REST API",
+      description: "REST API with Students and Courses collections",
     },
   },
 
