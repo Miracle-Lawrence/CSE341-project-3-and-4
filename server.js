@@ -34,15 +34,19 @@ app.use(cors({
 app.use(cors({ origin: "*" }));
 app.use("/", require("./routes/index.js"));
 
-passport.use(new GithubStrategy({
-  clientID: process.env.GITHUB_CLIENT_ID,
-  clientSecret: process.env.GITHUB_CLIENT_SECRET,
-  callbackURL: process.env.GITHUB_CALLBACK_URL
-}, function(accessToken, refreshToken, profile, done) {
-  // Here you would typically find or create a user in your database
-  // For simplicity, we'll just return the GitHub profile
-  return done(null, profile);
-}));
+passport.use(
+  new GithubStrategy(
+    {
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: process.env.GITHUB_CALLBACK_URL,
+    },
+    function (accessToken, refreshToken, profile, done) {
+      console.log("GitHub Profile:", profile);
+      return done(null, profile);
+    },
+  ),
+);
 
 passport.serializeUser((user, done) => {
   done(null, user);
@@ -52,14 +56,30 @@ passport.deserializeUser((obj, done) => {
   done(null, obj);
 });
 
-app.get("/", (req, res) => {res.send(req.session.user !== undefined ? `Logged in as ${req.session.user.displayName}` : "Logged out")});
+app.get("/", (req, res) => {
+  if (!req.session.user) {
+    return res.send("Logged out");
+  }
 
-app.get("/github/callback", passport.authenticate("github", {
-  failureRedirect: "/api-docs", session: false
-}), (req, res) => {
-  req.session.user = req.user;
-  res.redirect("/");
+  const name =
+    req.session.user.displayName ||
+    req.session.user.username ||
+    req.session.user.id;
+
+  res.send(`Logged in as ${name}`);
 });
+
+app.get(
+  "/github/callback",
+  passport.authenticate("github", {
+    failureRedirect: "/api-docs",
+  }),
+  (req, res) => {
+    console.log("Authenticated User:", req.user);
+    req.session.user = req.user;
+    res.redirect("/");
+  },
+);
 
 // CONNECT DATABASE
 connectDB();
