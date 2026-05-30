@@ -11,6 +11,7 @@ const {
 } = require("../controllers/students");
 
 const validateStudent = require("../middleware/validator");
+const isAuthenticated = require("../middleware/authenticate");
 
 /**
  * @swagger
@@ -115,7 +116,7 @@ router.get("/:id", getStudentById);
  *       500:
  *         description: Server error
  */
-router.post("/", validateStudent, createStudent);
+router.post("/", isAuthenticated, validateStudent, createStudent);
 
 /**
  * @swagger
@@ -147,7 +148,7 @@ router.post("/", validateStudent, createStudent);
  *       500:
  *         description: Server error
  */
-router.put("/:id", validateStudent, updateStudent);
+router.put("/:id", isAuthenticated, validateStudent, updateStudent);
 
 /**
  * @swagger
@@ -171,6 +172,6 @@ router.put("/:id", validateStudent, updateStudent);
  *       500:
  *         description: Server error
  */
-router.delete("/:id", deleteStudent);
+router.delete("/:id", isAuthenticated, deleteStudent);
 
 module.exports = router;

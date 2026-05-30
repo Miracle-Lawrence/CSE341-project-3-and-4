@@ -12,6 +12,8 @@ const {
 
 const validateCourse = require("../middleware/courseValidator");
 
+const isAuthenticated = require("../middleware/authenticate");
+
 /**
  * @swagger
  * components:
@@ -100,7 +102,7 @@ router.get("/:id", getCourseById);
  *       201:
  *         description: Course created
  */
-router.post("/", validateCourse, createCourse);
+router.post("/", isAuthenticated, validateCourse, createCourse);
 
 /**
  * @swagger
@@ -125,7 +127,7 @@ router.post("/", validateCourse, createCourse);
  *       200:
  *         description: Course updated
  */
-router.put("/:id", validateCourse, updateCourse);
+router.put("/:id", isAuthenticated, validateCourse, updateCourse);
 
 /**
  * @swagger
@@ -144,6 +146,6 @@ router.put("/:id", validateCourse, updateCourse);
  *       200:
  *         description: Course deleted
  */
-router.delete("/:id", deleteCourse);
+router.delete("/:id", isAuthenticated, deleteCourse);
 
 module.exports = router;
